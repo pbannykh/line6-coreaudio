@@ -5,6 +5,9 @@
 /plugin/Line6.driver
 /plugin/haltest
 
+# Local universal daemon (produced by the release build)
+/daemon/line6-daemon
+
 # macOS
 .DS_Store
 

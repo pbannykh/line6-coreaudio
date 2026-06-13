@@ -36,7 +36,28 @@ The POD X3 sends 8 channels to the computer:
 
 ---
 
-## Install (step by step)
+## Install
+
+### Option A — prebuilt release (easiest, no Xcode or Rust)
+
+1. Download the latest `line6-coreaudio-…-macos-universal.tar.gz` from the
+   [**Releases**](https://github.com/pbannykh/line6-coreaudio/releases) page.
+2. Double-click it to unpack. Open **Terminal**, drag the unpacked folder onto the
+   window to move into it, and run:
+
+   ```sh
+   ./install.sh ondemand
+   ```
+
+   It asks for your password once (to install the audio plugin) and sets it up to
+   start automatically when you connect the device.
+3. Plug in your POD X3 and select it as the input in your DAW or **System Settings →
+   Sound → Input**. To remove it later, run `./uninstall.sh` from the same folder.
+
+> The release binaries are ad-hoc signed (not notarized). The installer removes the
+> macOS download quarantine for you.
+
+### Option B — build from source
 
 You only need to do this once. Open the **Terminal** app and run the commands
 below (copy and paste each line, press Return).
@@ -73,21 +94,20 @@ or in **System Settings → Sound → Input**.
 
 ### Choosing how the daemon runs
 
-`./scripts/install.sh` takes options:
+The installer — `./install.sh` from a release, or `./scripts/install.sh` from
+source — takes the same options:
 
 - `ondemand` — the helper starts when you connect the device and stops when you
   unplug it (recommended).
 - *(no argument)* — "always-on": the helper is always running and picks the
   device up when connected.
 - a number, e.g. `40` — set the buffer latency in milliseconds (default 64).
-  Lower is snappier but needs a faster Mac. Example:
-  `./scripts/install.sh ondemand 40`.
+  Lower is snappier but needs a faster Mac. Example: `install.sh ondemand 40`.
 
 ### Uninstall
 
-```sh
-./scripts/uninstall.sh
-```
+From a release folder: `./uninstall.sh`. From a source checkout:
+`./scripts/uninstall.sh`.
 
 ---
 

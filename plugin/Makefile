@@ -16,6 +16,9 @@ SHARED  = ../shared
 HALDIR  = /Library/Audio/Plug-Ins/HAL
 
 CC      = clang
+# ARCHFLAGS is empty by default (native build). Set it for a universal binary,
+# e.g. `make ARCHFLAGS="-arch arm64 -arch x86_64"` (used by the release build).
+ARCHFLAGS ?=
 CFLAGS  = -Wall -Wextra -O2 -fPIC -I$(SHARED)
 LDFLAGS = -bundle -framework CoreFoundation -framework CoreAudio
 
@@ -27,12 +30,12 @@ MACOS    = $(CONTENTS)/MacOS
 all: $(BUNDLE)
 
 haltest: haltest.c $(SHARED)/line6_shm.h
-	$(CC) -Wall -Wextra -O2 -I$(SHARED) -framework CoreFoundation -framework CoreAudio -o haltest haltest.c
+	$(CC) $(ARCHFLAGS) -Wall -Wextra -O2 -I$(SHARED) -framework CoreFoundation -framework CoreAudio -o haltest haltest.c
 
 $(BUNDLE): $(SRC) Info.plist $(SHARED)/line6_shm.h
 	@rm -rf $(BUNDLE)
 	@mkdir -p $(MACOS)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $(MACOS)/$(EXEC) $(SRC)
+	$(CC) $(ARCHFLAGS) $(CFLAGS) $(LDFLAGS) -o $(MACOS)/$(EXEC) $(SRC)
 	cp Info.plist $(CONTENTS)/Info.plist
 	@# ad-hoc signature (fine for personal use; no Developer ID needed)
 	codesign --force --sign - --timestamp=none $(BUNDLE)

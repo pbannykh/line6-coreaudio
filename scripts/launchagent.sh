@@ -21,7 +21,9 @@ LABEL="org.line6.daemon"
 PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
 LOG="$HOME/Library/Logs/line6-daemon.log"
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-BIN="$REPO/daemon/target/release/line6-daemon"
+# Path to the daemon binary. Override with LINE6_DAEMON_BIN (the release installer
+# does this, since its binary lives outside the source tree).
+BIN="${LINE6_DAEMON_BIN:-$REPO/daemon/target/release/line6-daemon}"
 UID_NUM="$(id -u)"
 DOMAIN="gui/$UID_NUM"
 
@@ -42,9 +44,15 @@ if [ "$MODE" = "uninstall" ]; then
     exit 0
 fi
 
-if [ ! -x "$BIN" ]; then
-    echo "release binary not found, building..."
+# Build from source if needed (no-op for the release installer, which ships the
+# binary and points LINE6_DAEMON_BIN at it).
+if [ ! -x "$BIN" ] && [ -f "$REPO/daemon/Cargo.toml" ]; then
+    echo "daemon binary not found, building..."
     ( cd "$REPO/daemon" && cargo build --release )
+fi
+if [ ! -x "$BIN" ]; then
+    echo "daemon binary not found: $BIN" >&2
+    exit 1
 fi
 
 mkdir -p "$HOME/Library/LaunchAgents" "$HOME/Library/Logs"
