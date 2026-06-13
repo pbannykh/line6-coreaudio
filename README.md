@@ -1,5 +1,7 @@
 # line6-coreaudio
 
+[![CI](https://github.com/pbannykh/line6-coreaudio/actions/workflows/ci.yml/badge.svg)](https://github.com/pbannykh/line6-coreaudio/actions/workflows/ci.yml)
+
 A native **audio input driver for Line 6 USB devices on macOS** (Apple Silicon),
 for hardware that has no working macOS driver — such as the **Line 6 POD X3 /
 POD X3 Live**.

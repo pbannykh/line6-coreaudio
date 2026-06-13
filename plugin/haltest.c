@@ -245,8 +245,14 @@ static void iosim(AudioServerPlugInDriverRef drv, double seconds)
 
 int main(int argc, char** argv)
 {
-    const char* path = argc > 1 ? argv[1] : "Line6.driver/Contents/MacOS/Line6HAL";
-    double seconds = argc > 2 ? atof(argv[2]) : 6.0;
+    const char* path = "Line6.driver/Contents/MacOS/Line6HAL";
+    double seconds = 6.0;
+    int sweepOnly = 0; // --sweep-only: skip the IO simulation (needs no device)
+    int positional = 0;
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "--sweep-only") == 0) { sweepOnly = 1; continue; }
+        if (positional++ == 0) path = argv[i]; else seconds = atof(argv[i]);
+    }
 
     void* h = dlopen(path, RTLD_NOW | RTLD_LOCAL);
     if (!h) { fprintf(stderr, "dlopen: %s\n", dlerror()); return 1; }
@@ -264,7 +270,7 @@ int main(int argc, char** argv)
     if (r != noErr) return 1;
 
     sweep(drv);
-    iosim(drv, seconds);
+    if (!sweepOnly) iosim(drv, seconds);
 
     printf("PropertiesChanged from plugin: %u\n", gNotifications);
     printf("=== RESULT: %s (%d problems) ===\n", gProblems ? "FAIL" : "PASS", gProblems);

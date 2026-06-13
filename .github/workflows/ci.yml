@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    name: Build (macOS)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: daemon
+
+      # libusb is vendored (built from source by libusb1-sys), so no system
+      # libusb is needed — only the toolchain and the macOS frameworks.
+      - name: Build daemon
+        working-directory: daemon
+        run: cargo build --release
+
+      - name: Build plugin and test harness
+        working-directory: plugin
+        run: |
+          make
+          make haltest
+
+      # Property-handler consistency check (no device/daemon needed). Catches the
+      # Size/Data and element-gate bugs that destabilise coreaudiod.
+      - name: Plugin property self-test
+        working-directory: plugin
+        run: ./haltest --sweep-only
