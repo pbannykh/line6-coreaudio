@@ -1,0 +1,13 @@
+# Rust build output
+/daemon/target
+
+# Built plugin bundle and test harness
+/plugin/Line6.driver
+/plugin/haltest
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+*.iml

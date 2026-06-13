@@ -1,0 +1,19 @@
+[package]
+name = "line6-daemon"
+version = "0.1.0"
+edition = "2021"
+description = "USB capture daemon for Line 6 audio devices on macOS"
+license = "GPL-2.0-only"
+
+[[bin]]
+name = "line6-daemon"
+path = "src/main.rs"
+
+[dependencies]
+libc = "0.2"
+# `vendored`: build libusb from the crate's bundled source and link it
+# statically, so no system/Homebrew libusb is required at build or run time.
+libusb1-sys = { version = "0.7", features = ["vendored"] }
+
+[profile.release]
+opt-level = 3
